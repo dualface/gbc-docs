@@ -18,6 +18,7 @@
 -   定义类
 -   HTTP/WebSocket 外部接口
 -   延迟任务接口
+-   命令行接口
 
 <br />
 
@@ -40,7 +41,10 @@
   | \-- HelloAction.lua
   |
   +-- jobs/
-  | \-- JobsHandler.lua
+  | \-- MapAction.lua
+  |
+  +-- commands/
+  | \-- ToolAction.lua
   |
   +-- packages/
     +-- <PACKAGE_NAME>/
@@ -55,6 +59,7 @@
 -   `conf/app_config.lua` 包含 app 的特定设置。
 -   `actions` 目录放置所有供 HTTP 请求和 WebSocket 连接调用的接口。
 -   `jobs` 目录放置所有延迟任务的处理接口。
+-   `commands` 目录放置所有命令行接口。
 -   `packages` 目录放置所有扩展包。
 
 参考：
@@ -156,7 +161,7 @@ local HelloAction = cc.class("HelloAction", gbc.ActionBase)
 
 ~~~
 HelloAction
-JobsHandler
+MapAction
 ~~~
 
 如果一个类是基础类，建议使用 `Base` 做最后一个单词。例如：
@@ -361,11 +366,6 @@ transition.move(target, ...)
 <br />
 
 
-## 延迟任务接口
-
-<br />
-
-
 ## 错误处理
 
 对于错误处理，不同上下文需要不同的机制。基本上按照错误的严重程度来划分：
@@ -529,7 +529,15 @@ return HelloAction
 
 延迟任务接口和 HTTP/WebSocket 接口的定义规则只有以下区别：
 
--   `action module` 对应的类名是添加 `Handler`。例如 `map.addres` 对应 `MapHandler` 类。
--   接口类放在 `<APP_ROOT>/jobs` 目录中。
+-   接口类默认放在 `<APP_ROOT>/jobs` 目录中。
+
+<br />
+
+
+## 命令行接口
+
+命令行接口和 HTTP/WebSocket 接口的定义规则只有以下区别：
+
+-   接口类默认放在 `<APP_ROOT>/commands` 目录中。
 
 \-EOF\-
