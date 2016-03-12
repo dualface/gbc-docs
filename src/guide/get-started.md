@@ -166,4 +166,4 @@ curl -o - "http://localhost:8088/hello?action=hello.say&word=code"
 
 -   [安装并启动 GBC](install.md)
 -   [编码规范](coding-style.md)
-
+-   [配置文件](configs.md)
