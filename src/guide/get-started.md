@@ -58,7 +58,8 @@ $ ./apps/tests/shells/run_tests
 [CLI    jobs.add] ok
 ```
 
-单元测试的主要代码都在 `./apps/tests/actions` 和 `./apps/jobs` 目录中。
+单元测试的主要代码都在 `./apps/tests/actions` 和 `./apps/jobs` 目录中。可以在线查看最新源代码：[https://github.com/dualface/gbc-core/tree/develop/apps/tests](https://github.com/dualface/gbc-core/tree/develop/apps/tests)。
+
 
 
 ## 创建自己的 Hello 应用
