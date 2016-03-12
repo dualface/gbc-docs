@@ -21,7 +21,7 @@ function BarrackAction:sentAction(arg)
     }
 
     -- 取得 jobs 接口，并添加任务
-    local jobs = self.connect:getJobs:)
+    local jobs = self.connect:getJobs()
     jobs:add({
         action = 'jobs/battle.arrival', -- 任务传递给 battle.arrival
         data   = data, -- 要传递给任务接口的数据

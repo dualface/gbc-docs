@@ -82,7 +82,7 @@ $ ./apps/tests/shells/run_tests
 **`conf/app_entry.conf`**
 
 ```
-location /hello {
+location = /hello {
     content_by_lua 'nginxBootstrap:runapp("_APP_ROOT_")';
 }
 ```
