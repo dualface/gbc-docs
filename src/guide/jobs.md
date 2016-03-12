@@ -6,10 +6,8 @@
 
 ~~~lua
 -- 军营模块
-
-local ActionBase = require("server.base.ActionBase")
-
-local BarrackAction = class("BarrackAction", ActionBase)
+local gbc = cc.import("#gbc")
+local BarrackAction = cc.class("BarrackAction", gbc.ActionBase)
 
 -- 出兵的接口
 function BarrackAction:sentAction(arg)
@@ -21,24 +19,26 @@ function BarrackAction:sentAction(arg)
     }
 
     -- 取得 jobs 接口，并添加任务
-    local jobs = self.connect:getJobs()
+    local jobs = self:getInstance():getJobs()
     jobs:add({
-        action = 'jobs/battle.arrival', -- 任务传递给 battle.arrival
+        action = 'battle.arrival', -- 任务传递给 battle.arrival
         data   = data, -- 要传递给任务接口的数据
         delay  = 10, -- 任务延迟 10 秒执行
     })
 end
+
+return BarrackAction
 ~~~
 
 当 `barrack.sent` 接口被调用后，一个延时任务就添加到了系统中。
 
-系统会在指定时间到达后，调用任务指定的 `jobs/battle.arrival` 接口。
+系统会在指定时间到达后，调用任务指定的 `battle.arrival` 接口。
 
 ~~~lua
+local gbc = cc.import("#gbc")
+local BattleAction = cc.class("BattleAction", gbc.ActionBase)
 
-local ActionBase = require("server.base.ActionBase")
-
-local BattleAction = class("BattleAction", ActionBase)
+BattleAction.ACCEPTED_REQUEST_TYPE = "worker" -- 指定该接口只用于 Job 后台任务
 
 function BattleAction:arrivalAction(job)
     -- 整个任务会作为参数传入接口
@@ -54,7 +54,11 @@ function BattleAction:arrivalAction(job)
 
     ...
 end
+
+return BattleAction
 ~~~
+
+**注意**：`BattleAction.lua` 文件必须放在应用的 `jobs` 目录中。
 
 
 ## 任务执行结果
@@ -70,26 +74,6 @@ end
 在任务执行期间如果调用了 `error()`、`throw()` 等中断执行的函数，都会导致任务重新执行。
 
 
-## 保护内部接口
-
-像 `battle.arrival` 这样的接口，不应该从外部访问。因此 GBC 提供了一个简单有效的安全机制。
-
-在 `barrack.sent` 中指定的任务接口是 `jobs/battle.arrival`。多出来的 `jobs/` 前缀对应应用程序的 `jobs` 目录：
-
-~~~
-app
-  +-- actions
-  +-- jobs
-~~~
-
-由于所有没有放在 `actions` 目录中的模块都无法从外部访问，所以只要做到以下两点就可以保证内部接口的安全：
-
-1.  内部接口的文件应该放在非 `actions` 目录中，例如前面的 `BattleAction.lua` 就应该放在 `jobs` 目录里；
-2.  调用内部接口时，在接口名字前面加上目录名。例如 `jobs/battle.arrival`。
-
-通过这种简单的方法，就保护了内部接口。
-
-
 ## Jobs:提供的接口
 
 ### `Jobs:add()` - 添加一个延时执行的任务
@@ -100,10 +84,10 @@ app
     -   `action`: 任务到期时调用哪一个接口
     -   `data`: 要传递给任务接口的数据，必须是 `table`
     -   `delay`: 任务的等待时间
-    -   `priority`: （可选）任务的优先级，数字越小优先级越高，默认为 2048，表示普通优先级。低于 1024 的优先级表示紧急任务。同等延迟时间的任务，优先级高的会先执行。
-    -   `ttr`: （可选）任务接口可以用多少时间来处理任务。默认为 10 秒。如果在制定时间内任务没有处理完成，该任务会重新回到队列中。因此对于可能耗时较长的任务，应该指定较大的 `ttr` 值。
+    -   `pri`: （可选）任务的优先级，数字越小优先级越高，默认为 2048，表示普通优先级。低于 1024 的优先级表示紧急任务。同等延迟时间的任务，优先级高的会先执行。
+    -   `ttr`: （可选）任务接口可以用多少时间来处理任务。默认为 10 秒。如果在指定时间内任务没有处理完成，该任务会重新回到队列中。因此对于可能耗时较长的任务，应该指定较大的 `ttr` 值。
 
-`add()` 如果成功，将返回一个整数，作为 `job id`。后续可以用 `job id` 移除任务或暂停任务。
+`add()` 如果成功，将返回一个整数，作为 `JobId`。后续可以用 `JobId` 移除任务或暂停任务。
 
 `add()` 如果失败，将返回 `nil` 和错误信息，可以用以下的代码判断：
 
@@ -138,7 +122,7 @@ PS: `os.gettime()` 函数是 GBC 提供的自定义函数，并非标准库函�
 说明：
 
 -   `Jobs:delete(jobid)`
-    -   `jobid`: 要删除任务的 `job id`，由 `Jobs:add()` 和 `Jobs:at()` 接口返回。
+    -   `jobid`: 要删除任务的 `JobId`，由 `Jobs:add()` 和 `Jobs:at()` 接口返回。
 
 `delete()` 如果成功，返回 `true`，否则返回 `nil` 和错误信息。
 
@@ -151,13 +135,19 @@ PS: `os.gettime()` 函数是 GBC 提供的自定义函数，并非标准库函�
     -   `jobid`: 如果指定的任务还未删除，则返回包含所有任务信息的 `table`：
 
 ~~~lua
-local job = jobs:get(jobid)
--- job.id
--- job.action
--- job.delay
--- job.priority
--- job.ttr
--- job.data
+local job, err = jobs:get(jobid)
+if not job then
+    -- 进行错误处理
+    print(err)
+else
+    -- 打印 job 内容
+    print(job.id)
+    print(job.action)
+    print(job.delay)
+    print(job.pri)
+    print(job.ttr)
+    cc.dump(job.data)
+end
 ~~~
 
 如果指定的任务不存在，则返回 `nil` 和错误信息。
@@ -171,4 +161,3 @@ local job = jobs:get(jobid)
 
 `getready()` 如果成功，返回一个 `table`，结果同 `get()`。如果失败，则返回 `nil` 和错误信息。
 
-\-EOF\-
