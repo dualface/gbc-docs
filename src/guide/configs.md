@@ -96,4 +96,21 @@ location = /ENTRY {
 
 这个文件中的内容会直接覆盖掉全局配置文件 `conf/config.lua` 中的 `app` 部分。所以如果需要修改应用运行设定，应该放在 `app_config.lua` 中。
 
+可以指定的运行时设定：
+
+选项 | 说明
+-----|-----
+`messageFormat` | 指定客户端和服务端交换数据的消息格式，默认为 `json`。
+`defaultAcceptedRequestType` | 指定服务端接口默认支持哪种请求方式，默认为 `http`，可以设定为 `websocket` 或者 `{"http", "websocket"}` 以支持多种请求方式。但为了安全起见，应该设置为 `http`，然后在需要支持其他请求类型的接口里再明确指定。
+`sessionExpiredTime` | 指定 Session 的失效时间。Session 建立后，如果没有调用 `Session:setKeepAlive()` 方法，则超过指定时间这个 Session 就会失效。
+`httpEnabled` | 指定该应用是否接受 HTTP 请求。
+`httpMessageFormat` | 指定客户端以 HTTP 请求和服务端交互时使用的消息格式，默认为 `json`。
+`websocketEnabled` | 指定该应用是否接受 WebSocket 请求。
+`websocketMessageFormat` | 指定客户端以 WebSocket 请求和服务端交互时使用的消息格式，默认为 `json`。
+`websocketsTimeout` | 指定客户端和服务端使用 WebSocket 交互时，服务端等待客户端消息的超时时间。这个时间设置为较短时，可以更快检查到客户端已经断开连接，但会些微增加服务器负担。默认为 60 秒。
+`websocketsMaxPayloadLen` | 指定客户端和服务端使用 WebSocket 交互时，每个消息的最大长度（字节），默认为 `16KB`。
+`jobMessageFormat` | 指定后台任务的消息格式，默认为 `json`。
+`numOfJobWorkers` | 指定该应用启动多少个后台进程。推荐按照服务器的 CPU 个数来设置。
+`jobWorkerRequests` | 指定每一个后台任务进程处理多少个任务就重启一次（避免因为代码问题造成的内存泄露）。
+
 关于 `app_entry.conf` 和 `app_config.lua` 的示例，可以看看 GBC 自带的 `welcome` 和 `tests` 两个应用。
