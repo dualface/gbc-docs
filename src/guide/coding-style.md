@@ -74,7 +74,7 @@
 
 ## 包结构
 
-为了方便组织应用内容，GBC 支持一种简单的包结构。每一个包是一个目录，其中包含一个与目录同名的 `.lua` 文件。
+为了方便组织应用内容，GBC（GameBox Cloud 的简称） 支持一种简单的包结构。每一个包是一个目录，其中包含一个与目录同名的 `.lua` 文件。
 
 例如一个名为 `hello` 的包，保存在 `packages/hello/hello.lua` 中：
 
@@ -102,6 +102,7 @@ hello.say()
 -   包目录和文件必须是全小写名
 -   包目录中必须有一个和目录同名的 `.lua` 文件，供 `cc.import()` 载入
 -   包目录和文件必须放到应用程序的 `packages` 目录中
+-   `cc.import()` 载入包的时候，必须在包名字前加上符号 `#`
 
 <br />
 
@@ -322,7 +323,7 @@ Bear.EVENT = table.readonly({
 
 ~~~lua
 local bear = Bear:new()
-bear:addEventListener(Bear.EVENT.WALK, cc.handler(self, self.onWalk))
+bear:bind(Bear.EVENT.WALK, cc.handler(self, self.onWalk))
 ~~~
 
 在定义类的 `EVENT` 事件列表时，使用了 `table.readonly()` 函数：
