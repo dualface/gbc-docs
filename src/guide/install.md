@@ -31,20 +31,17 @@ git clone https://github.com/dualface/gbc-core.git
 
 有两种方式搭建开发环境：
 
--   使用 `install_dev.sh` 安装脚本
+-   使用 `make.sh` 脚本
 -   使用 [Vagrant](https://www.vagrantup.com/) 安装
 
 
-### 使用 `install_dev.sh` 安装脚本
+### 使用 `make.sh` 安装脚本
 
-下载的 `gbc-core` 源代码解压缩到需要的目录后，进入目录执行 `install_dev.sh` 脚本即可完成安装。
+下载的 `gbc-core` 源代码解压缩到需要的目录后，进入目录执行 `make.sh` 脚本即可完成安装。
 
-注意：
+注意：`gbc-core` 源代码应该放在没有空格和中文字符的目录中
 
-1.  `gbc-core` 源代码应该放在没有空格和中文字符的目录中
-2.  `install_dev.sh` 会把 GBC 安装到 `gbc-core` 源代码的 `devel` 子目录中
-
-安装完成后即可启动 GBC 进行测试。
+安装完成后即可使用 `start_server --debug` 启动 GBC 进行测试。
 
 
 ### 使用 Vagrant 安装
@@ -80,7 +77,7 @@ vagrant up
 
     ```bash
     cd gbc-core
-    sudo ./install.sh --prefix=/home/gbc/gbc-core
+    sudo ./make.sh --prefix=/home/gbc/gbc-core
     sudo chown -R gbc:gbc /home/gbc/gbc-core
     ```
 
@@ -91,7 +88,7 @@ vagrant up
 
 ## 启动与停止 GBC
 
-如果使用 `install.sh` 或 `install_dev.sh` 进行的安装，那么只需要进入安装目录，执行：
+进入安装目录，执行：
 
 ```bash
 ./start_server
@@ -173,34 +170,4 @@ cd /opt/gbc-core
 
 ## 用调试模式做开发
 
-使用 `install_dev.sh` 或者 Vagrant 方式安装运行 GBC 时，安装好的 GBC 并没有包含所有文件。
-
-以 Vagrant 安装为例：
-
-```bash
-cd /opt/gbc-core
-ls -l
-```
-
-结果如下：
-
-```markdown
-lrwxrwxrwx  apps -> /vagrant/apps/
-drwxr-xr-x  bin/
-lrwxrwxrwx  check_server -> /vagrant/shells/check_server
-lrwxrwxrwx  conf -> /vagrant/conf/
-drwxr-xr-x  db/
-drwxr-xr-x  logs/
-lrwxrwxrwx  src -> /vagrant/src/
-lrwxrwxrwx  start_server -> /vagrant/shells/start_server
-lrwxrwxrwx  stop_server -> /vagrant/shells/stop_server
-drwxr-xr-x  tmp/
-```
-
-可以看到 `apps`, `src`, `conf` 等目录和 `check_server`, `start_server` 和 `stop_server` 脚本都是符号链接。
-
-因此只要修改了 `gbc-core` 源代码目录中的相应文件，就可以在 `./devel/` 目录或者 Vagrant 虚拟机里生效。
-
-
-
-
+使用 `make.sh` 或者 Vagrant 方式安装运行 GBC 时，只要修改了源代码目录中的相应文件，就可以理解生效。

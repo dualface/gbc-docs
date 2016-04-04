@@ -82,10 +82,12 @@ $ ./apps/tests/shells/run_tests
 **`conf/app_entry.conf`**
 
 ```
-location = /hello {
+location /hello/ {
     content_by_lua 'nginxBootstrap:runapp("_APP_ROOT_")';
 }
 ```
+
+这里务必注意写成 `/hello/`，而不是 `/hello`。如果没有后面的 `/`，那么访问时会出错。
 
 **`actions/HelloAction.lua`**
 
@@ -146,15 +148,17 @@ worker-hello:01                  STARTING
 现在来测试一下：
 
 ```bash
-curl -o - "http://localhost:8088/hello?action=hello.say"
+curl -o - "http://localhost:8088/hello/?action=hello.say"
 
 {"result":"hello, world"}
 
 
-curl -o - "http://localhost:8088/hello?action=hello.say&word=code"
+curl -o - "http://localhost:8088/hello/?action=hello.say&word=code"
 
 {"result":"hello, code"}
 ```
+
+记得之前 `app_entry.conf` 里 `/hello/` 的写法吗，所以这里也应该用 `/hello/?action=` 的写法。
 
 试着修改一下 `HelloAction.lua`，然后测试看看结果是否会有不同。
 
