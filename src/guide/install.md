@@ -19,7 +19,7 @@
 
 推荐从 [https://github.com/dualface/gbc-core](https://github.com/dualface/gbc-core) 下载最新版本 GBC：
 
--   打开 "releases" 页面，从中下载最新版本的 `.zip` 或者 `.tar.gz` 压缩包
+-   打开 "[releases](https://github.com/dualface/gbc-core/releases)" 页面，从中下载最新版本的 `.zip` 或者 `.tar.gz` 压缩包
 -   或者使用 `git` 命令 `clone` GBC 仓库：
 
 ```bash
